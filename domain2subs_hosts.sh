@@ -40,8 +40,12 @@ main() {
 # read command line argument
 targets=$1
 
+# check if targets is provided
+if [ -z "$targets" ]; then
+    echo "Please provide a file containing target domains."
+    exit 1
 # check if file exists
-if [ ! -f "$targets" ]; then
+elif [ ! -f "$targets" ]; then
     echo "File $targets does not exist."
     exit 1
 else
