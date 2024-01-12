@@ -1,13 +1,13 @@
 #!/bin/bash
 
 printTimeTaken() {
-    local tip=$1
+    local tip=$1  # subdomains or hosts
     local start=$2
     local end=$3
     local findingNum=$4
     local taken=$((end - start))
 
-    echo "Find $findingNum $tip in $(gdate -d@$taken -u +%H:%M:%S) seconds"
+    echo "Find $findingNum $tip in $(gdate -d@$taken -u +%T) seconds"
 }
 
 find_subs() {
@@ -58,6 +58,7 @@ fromFile() {
 }
 
 fromPipe() {
+    totalTimeStart=$(gdate +%s)
     for ((i = 1; i <= $#; i++)); do
         domain="${!i}"
         echo "Processing target: $domain"
@@ -66,9 +67,11 @@ fromPipe() {
 
         find_subs "$domain" "$subs_outname"
         find_hosts "$subs_outname" "$hosts_outname"
-
         echo ""
     done
+    totalTimeEnd=$(gdate +%s)
+    totalTaken=$((totalTimeEnd - totalTimeStart))
+    echo -e "\nTotal Time Taken: $(gdate -d@$totalTaken -u +%T) for $# domains"
 }
 
 if [ ! -t 0 ]; then
