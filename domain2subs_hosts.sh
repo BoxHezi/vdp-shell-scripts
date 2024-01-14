@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/bin/bash
 
 printTimeTaken() {
     local tip=$1 # subdomains or hosts
@@ -7,7 +7,7 @@ printTimeTaken() {
     local findingNum=$4
     local taken=$((end - start))
 
-    echo "Find $findingNum $tip in $(date -d@$taken -u +%T) seconds"
+    echo "Find $findingNum $tip in $(eval date -d@$taken -u +%T) seconds"
 }
 
 find_subs() {
@@ -15,10 +15,10 @@ find_subs() {
     outname=$2
 
     while true; do
-        startTime=$(date +%s)
+        startTime=$(eval date +%s)
         echo "$domain" | subfinder -silent | tee "$outname"
         if [ -s "$outname" ]; then
-            endTime=$(date +%s)
+            endTime=$(eval date +%s)
             findingNum=$(wc <"$outname" -l)
             printTimeTaken "subdomains" "$startTime" "$endTime" "$findingNum" | tee -a "$outname"
             # return if file is not empty
@@ -32,10 +32,10 @@ find_hosts() {
     outname=$2
 
     while true; do
-        startTime=$(date +%s)
+        startTime=$(eval date +%s)
         dnsx -resp -silent <"$subs" | tee "$outname"
         if [ -s "$outname" ]; then
-            endTime=$(date +%s)
+            endTime=$(eval date +%s)
             findingNum=$(wc <"$outname" -l)
             printTimeTaken "hosts" "$startTime" "$endTime" "$findingNum" | tee -a "$outname"
             # return if file is not empty
@@ -58,7 +58,7 @@ fromFile() {
 }
 
 fromPipe() {
-    totalTimeStart=$(date +%s)
+    totalTimeStart=$(eval date +%s)
     for ((i = 1; i <= $#; i++)); do
         domain="${!i}"
         echo "Processing target: $domain"
@@ -69,10 +69,12 @@ fromPipe() {
         find_hosts "$subs_outname" "$hosts_outname"
         echo ""
     done
-    totalTimeEnd=$(date +%s)
+    totalTimeEnd=$(eval date +%s)
     totalTaken=$((totalTimeEnd - totalTimeStart))
-    echo -e "\nTotal Time Taken: $(date -d@$totalTaken -u +%T) for $# domains"
+    echo -e "\nTotal Time Taken: $(eval date -d@$totalTaken -u +%T) for $# domains"
 }
+
+shopt -s expand_aliases
 
 os=$(uname)
 if [[ "${os,,}" == "linux"* ]]; then
@@ -99,3 +101,5 @@ else
         fromFile "$targetsFile"
     fi
 fi
+
+shopt -u expand_aliases
