@@ -6,6 +6,7 @@
 - [dnsx](https://github.com/projectdiscovery/dnsx)
 - [wafw00f](https://github.com/EnableSecurity/wafw00f)
 - [gron](https://github.com/tomnomnom/gron)
+- [jq](https://github.com/jqlang/jq)
 
 ### `domain2subs_hosts.sh`
 
