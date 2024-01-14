@@ -1,13 +1,13 @@
 #!/bin/bash
 
 printTimeTaken() {
-    local tip=$1  # subdomains or hosts
+    local tip=$1 # subdomains or hosts
     local start=$2
     local end=$3
     local findingNum=$4
     local taken=$((end - start))
 
-    echo "Find $findingNum $tip in $(gdate -d@$taken -u +%T) seconds"
+    echo "Find $findingNum $tip in $(date -d@$taken -u +%T) seconds"
 }
 
 find_subs() {
@@ -15,10 +15,10 @@ find_subs() {
     outname=$2
 
     while true; do
-        startTime=$(gdate +%s)
+        startTime=$(date +%s)
         echo "$domain" | subfinder -silent | tee "$outname"
         if [ -s "$outname" ]; then
-            endTime=$(gdate +%s)
+            endTime=$(date +%s)
             findingNum=$(wc <"$outname" -l)
             printTimeTaken "subdomains" "$startTime" "$endTime" "$findingNum" | tee -a "$outname"
             # return if file is not empty
@@ -32,10 +32,10 @@ find_hosts() {
     outname=$2
 
     while true; do
-        startTime=$(gdate +%s)
+        startTime=$(date +%s)
         dnsx -resp -silent <"$subs" | tee "$outname"
         if [ -s "$outname" ]; then
-            endTime=$(gdate +%s)
+            endTime=$(date +%s)
             findingNum=$(wc <"$outname" -l)
             printTimeTaken "hosts" "$startTime" "$endTime" "$findingNum" | tee -a "$outname"
             # return if file is not empty
@@ -58,7 +58,7 @@ fromFile() {
 }
 
 fromPipe() {
-    totalTimeStart=$(gdate +%s)
+    totalTimeStart=$(date +%s)
     for ((i = 1; i <= $#; i++)); do
         domain="${!i}"
         echo "Processing target: $domain"
@@ -69,10 +69,17 @@ fromPipe() {
         find_hosts "$subs_outname" "$hosts_outname"
         echo ""
     done
-    totalTimeEnd=$(gdate +%s)
+    totalTimeEnd=$(date +%s)
     totalTaken=$((totalTimeEnd - totalTimeStart))
-    echo -e "\nTotal Time Taken: $(gdate -d@$totalTaken -u +%T) for $# domains"
+    echo -e "\nTotal Time Taken: $(date -d@$totalTaken -u +%T) for $# domains"
 }
+
+os=$(uname)
+if [[ "${os,,}" == "linux"* ]]; then
+    alias date="date"
+elif [[ "${os,,}" == "darwin"* ]]; then
+    alias date="gdate"  # use gdate in MacOS
+fi
 
 if [ ! -t 0 ]; then
     declare -a targets
