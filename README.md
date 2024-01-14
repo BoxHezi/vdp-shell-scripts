@@ -5,6 +5,7 @@
 - [subfinder](https://github.com/projectdiscovery/subfinder)
 - [dnsx](https://github.com/projectdiscovery/dnsx)
 - [wafw00f](https://github.com/EnableSecurity/wafw00f)
+- [gron](https://github.com/tomnomnom/gron)
 
 ### `domain2subs_hosts.sh`
 
@@ -36,3 +37,13 @@ output:
 
 - `<date +%F_%T>_WAF.txt` contains urls with WAF detected
 - `<date +%F_%T>_noWAF.txt` contains urls without WAF detected
+
+### `chaos-target.sh`
+
+input:
+
+- None
+
+output:
+
+- `<name>.txt` contains target domains, and url to bugbounty description
