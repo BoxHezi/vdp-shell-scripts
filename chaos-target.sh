@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 
 ENDPOINT="https://raw.githubusercontent.com/projectdiscovery/public-bugbounty-programs/main/chaos-bugbounty-list.json"
 
@@ -14,18 +14,18 @@ fi
 for ((i = 0; i < targetsNum; i++)); do
     tempJSON=$(echo "$targets" | jq -r ".programs[$i]")
 
-    tempName=$(echo "$tempJSON" | jq -r ".name")
-    tempDomains=$(echo "$tempJSON" | jq -r ".domains[]")
+    name=$(echo "$tempJSON" | jq -r ".name")
+    domains=$(echo "$tempJSON" | jq -r ".domains[]")
 
-    if [[ "$tempDomains" == "" ]]; then
+    if [[ "$domains" == "" ]]; then
         # ignore targets which doesn't contains domain
-        echo "$tempName"
+        echo "${name} contains 0 domain"
         continue
     fi
 
     url=$(echo "$tempJSON" | jq -r ".url")
 
-    outfile="$chaosDir/$tempName.txt"
+    outfile="$chaosDir/$name.txt"
     echo "$url" | tee "$outfile"
-    echo "$tempDomains" | tee -a "$outfile"
+    echo "$domains" | tee -a "$outfile"
 done
